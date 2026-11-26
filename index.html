@@ -2591,6 +2591,150 @@
   <!-- =========================================================
        FIM DA TELA DE LOGIN
        ========================================================= -->
+<!-- =========================================================
+       BOTÃO PARA OCULTAR / MOSTRAR BARRA DE FILTROS NAS QUESTÕES
+       ========================================================= -->
+  <style>
+    #pq-btn-hide-filters {
+      appearance: none;
+      background: #0b2e52;
+      color: #7dd3fc;
+      border: 1px solid #38bdf8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+      margin-left: auto;
+    }
+    #pq-btn-hide-filters:hover {
+      background: #134475;
+      color: #ffffff;
+    }
+
+    /* Quando oculto, esconde toda a barra de filtros e libera a tela */
+    #view-questoes.pq-filters-collapsed header.topbar {
+      display: none !important;
+    }
+
+    /* Botão flutuante discreto para reabrir os filtros quando quiser */
+    #pq-floating-show-filters {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 360;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid #38bdf8;
+      background: linear-gradient(135deg, #07223d, #0f4c75);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45);
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    #pq-floating-show-filters:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+    }
+
+    #view-questoes.pq-filters-collapsed #pq-floating-show-filters {
+      display: inline-flex;
+    }
+
+    @media (max-width: 768px) {
+      #pq-btn-hide-filters {
+        width: 100%;
+        justify-content: center;
+        margin-left: 0;
+        padding: 8px 10px;
+      }
+      #pq-floating-show-filters {
+        right: 14px;
+        bottom: 14px;
+        padding: 9px 14px;
+        font-size: 12.5px;
+      }
+    }
+
+    @media print {
+      #pq-btn-hide-filters,
+      #pq-floating-show-filters {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = 'ipo3_pq_filters_collapsed_v1';
+
+      function initFilterToggle() {
+        var viewQuestoes = document.getElementById('view-questoes');
+        if (!viewQuestoes) return;
+
+        var topbarHeader = viewQuestoes.querySelector('header.topbar .topbar-header');
+        if (!topbarHeader || document.getElementById('pq-btn-hide-filters')) return;
+
+        // 1. Botão "Ocultar Filtros" dentro da barra superior
+        var hideBtn = document.createElement('button');
+        hideBtn.type = 'button';
+        hideBtn.id = 'pq-btn-hide-filters';
+        hideBtn.textContent = '🔼 Ocultar Filtros';
+        hideBtn.title = 'Recolher barra de filtros para focar nas questões';
+        topbarHeader.appendChild(hideBtn);
+
+        // 2. Botão flutuante "Mostrar Filtros" no canto inferior direito
+        var showBtn = document.createElement('button');
+        showBtn.type = 'button';
+        showBtn.id = 'pq-floating-show-filters';
+        showBtn.textContent = '🔎 Mostrar Filtros';
+        showBtn.title = 'Reabrir filtros e estatísticas das questões';
+        viewQuestoes.appendChild(showBtn);
+
+        function setCollapsed(collapsed) {
+          viewQuestoes.classList.toggle('pq-filters-collapsed', collapsed);
+          try {
+            localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+          } catch (e) {}
+        }
+
+        hideBtn.addEventListener('click', function () {
+          setCollapsed(true);
+        });
+
+        showBtn.addEventListener('click', function () {
+          setCollapsed(false);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Restaura a última preferência salva
+        try {
+          if (localStorage.getItem(STORAGE_KEY) === '1') {
+            setCollapsed(true);
+          }
+        } catch (e) {}
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initFilterToggle);
+      } else {
+        initFilterToggle();
+      }
+    })();
+  </script>
+  <!-- =========================================================
+       FIM DO BOTÃO DE OCULTAR FILTROS
+       ========================================================= -->
 
   <nav id="ipo3-mode-bar" aria-label="Alternar entre Material Didático e Papa Questões">
     <div class="ipo3-bar-brand">
@@ -32532,4 +32676,3 @@
   </script>
 </body>
 </html>
-
